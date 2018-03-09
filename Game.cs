@@ -4,40 +4,172 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Barren
+namespace ConsoleApplication1
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.Writeline("hi");
-            Console.ReadLine();
-                Player player1 = new Player();
-                Map map1 = new Map();
-                Combat bosses = new Combat();
-                bool death = False;
-                Console.WriteLine("Description");
-                Console.WriteLine("Please input North, East, South or West");
-                while (death == False)
+            Player player1 = new Player();
+            Map map1 = new Map();
+            Combat bosses = new Combat();
+            Treasure T = new Treasure();
+            bool death = false;
+            Console.WriteLine("You have begun your venture through the Barrens Chat. Good Luck you will need it.");
+            Console.WriteLine("Please input North, East, South or West");
+            map1.newcompx(player1);
+            map1.newcompy(player1);
+            while (death == false)
+            {
+                string move = Console.ReadLine();
+                player1.movePosition(move);
+                double distance=map1.dist(map1.xcomp, map1.ycomp, player1);
+                T.tres(player1);
+                if (map1.dist(map1.xcomp, map1.ycomp, player1) == 0)
                 {
-                    string move = Console.ReadLine();
-                    player1.movePosition(move);
-                    map1.dist();
-                    if (map1.dist() == 0)
-                    {
-                        bosses.combat();
-                    }
-                    //Stats etc
-                    map.newxcomp();
-                    map.newycomp();
+                    player1.displayEncounterStory();
+                    bosses.boss(player1);
+                    death = bosses.combat(player1);
+                    map1.newcompx(player1);
+                    map1.newcompy(player1);
+                    Console.WriteLine("Your attack is now: " + player1.attack);
+                }
+                else
+                {
+                    Console.WriteLine("You are " + distance + "m");
                 }
             }
+        }
+    }
+    class Treasure
+
+    {
+
+        public void tres(Player player)
+
+        {
+            Random rnd2 = new Random();
+            int Random = rnd2.Next(1, 10);
+            if (Random == 5) { 
+            Random rnd = new Random();
+
+            int random = rnd.Next(1, 11);
+
+                switch (random)
+
+                {
+
+                    case 1:
+
+                        Console.WriteLine("You found the sword of Imananti! Surely this blade will aid you in battle!");
+
+                        player.attack += 5;
+
+                        Console.WriteLine("+5 attack!");
+
+                        break;
+
+                    case 2:
+
+                        Console.WriteLine("You find a troll's foot in a tree stump. This won't be helpful");
+
+                        Console.WriteLine("+0 attack! +0 Health!");
+
+                        break;
+
+                    case 3:
+
+                        Console.WriteLine("Wow! A plank of wood! This can be used agressively or defensively.");
+
+                        player.attack += 1;
+
+                        player.maxhealth += 2;
+
+                        Console.WriteLine("+1 attack! +2 Health!");
+
+                        break;
+
+                    case 4:
+
+                        Console.WriteLine("You step on a very sharp pebble. Better keep this!");
+
+                        player.attack += 2;
+
+                        Console.WriteLine("+2 attack!");
+    
+                    break;
+
+                    case 5:
+
+                        Console.WriteLine("Some witch dude cast a spell on you. You feel really powerful! ...Where did the witch go?");
+
+                        player.attack += 3;
+
+                        Console.WriteLine("+3attack!");
+
+                        break;
+
+                    case 6:
+
+                        Console.WriteLine("Could that be the almighty chest plate of Ragnorak? No it isn't but it might provide some defence!");
+
+                        player.maxhealth += 3;
+
+                        Console.WriteLine("+3Health!");
+
+                        break;
+
+                    case 7:
+
+                        Console.WriteLine("You find a sword in the stone! You can't pull the sword out though, so use it as a mace!");
+
+                        player.attack += 1;
+
+                        Console.WriteLine("+1 attack!");
+
+                        break;
+
+                    case 8:
+
+                        Console.WriteLine("The great dragon of the south has blessed you with dragonic powers!");
+
+                        player.attack += 50;
+
+                        Console.WriteLine("+50 attack!");
+
+                        break;
+
+                    case 9:
+
+                        Console.WriteLine("Bash Candicoot crawls from under a log and gives you a sheild! How kind.");
+
+                        player.maxhealth += 6;
+
+                        Console.WriteLine("+6 attack!");
+
+                        break;
+
+                    case 10:
+
+                        Console.WriteLine("The amulet of destiny grants you power!");
+
+                        player.maxhealth += 10;
+
+                        Console.WriteLine("+10 Health!");
+
+                        break;
+                }
+
+            }
+
+        }
+
     }
 
     class Player
     {
         //Position
-        public int x = 0, y = 0, health = 10, attack = 1;
+        public int x = 0, y = 0, health = 10, attack = 3, maxhealth=10;
 
         public int getXPosition()
         {
@@ -101,6 +233,7 @@ namespace Barren
                     break;
             }
         }
+    }
 
         class Map
         {
@@ -108,52 +241,67 @@ namespace Barren
             private static readonly Random rnd = new Random();
             int near = rnd.Next(1, 11); // creates a number between 1 and 12
             int far = rnd.Next(1, 11);
-            int ycomp, xcomp;
+            public int ycomp, xcomp;
             public static int xcord, ycord;
-            public int newcompx(int x)
+            public int newcompx(Player player)
             {
-                xcomp = x + rnd.Next(-5, 5);
+                xcomp = player.getXPosition() + rnd.Next(-5, 5);
                 return xcomp;
             }
-            public int newcompy(int y)
+            public int newcompy(Player player)
             {
-                ycomp = y + rnd.Next(-5, 5);
+                ycomp = player.getYPosition() + rnd.Next(-5, 5);
                 return ycomp;
             }
+        public double dist(int xcomp, int ycomp, Player player)
+        {
+            double x = player.getXPosition();
+            double y = player.getYPosition();
+            return Math.Sqrt((x-xcomp) * (x-xcomp)) + ((y-ycomp) * (y-ycomp));
+        }
         }
         class Combat
         {
+        Random rnd = new Random();
             int bossH, bossA;
-            public void boss()
+            public void boss(Player player)
             {
-                bossH = 20;
-                bossA = 10;
+                bossH = player.health + rnd.Next(-5,3) ;
+                bossA = player.attack + rnd.Next(-5, 3);
+            if (bossA < 1)
+            {
+                bossA = 1;
             }
-            public void fight()
+            }
+            public void fight(Player player, Map map1)
             {
-                if ((Map.ycomp == player.getXPosition()) && (Map.ycomp == player.getYPosition()))
+                if ((map1.ycomp == player.getXPosition()) && (map1.ycomp == player.getYPosition()))
                 {
-                    combat();
+                    combat(player);
                 }
 
             }
-            public void combat()
+            public bool combat(Player player)
             {
-                while (bossH > 0 & health > 0)
+                while (bossH > 0 & player.health > 0)
                 {
-                    bossH = bossH - attack;
-                    health = health - bossA;
+                    bossH = bossH - player.attack;
+                    player.health = player.health - bossA;
                 }
-                if (bossH < 0)
+                if (bossH <= 0 & player.health>0)
                 {
-                    Console.WriteLine("You defeated the enemy!");
+                    Console.WriteLine("You defeated the enemy! You survived on:" + player.health +" health out of your total "+ player.maxhealth+"health");
+                player.health = player.maxhealth;
+                return false;
+                    
                 }
                 else
                 {
-                    Console.WriteLine("You are dead");
+                    Console.WriteLine("You were killed");
+                Console.WriteLine("You Achieved " + player.attack + "attack" + " and " + player.maxhealth + " health");
+                Console.ReadLine();
+                return true;
                 }
             }
         }
-    }
 }
-
