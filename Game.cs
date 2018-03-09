@@ -10,26 +10,34 @@ namespace Barren
     {
         static void Main(string[] args)
         {
-
-        }
+            Console.Writeline("hi");
+            Console.ReadLine();
+                Player player1 = new Player();
+                Map map1 = new Map();
+                Combat bosses = new Combat();
+                bool death = False;
+                Console.WriteLine("Description");
+                Console.WriteLine("Please input North, East, South or West");
+                while (death == False)
+                {
+                    string move = Console.ReadLine();
+                    player1.movePosition(move);
+                    map1.dist();
+                    if (map1.dist() == 0)
+                    {
+                        bosses.combat();
+                    }
+                    //Stats etc
+                    map.newxcomp();
+                    map.newycomp();
+                }
+            }
     }
 
     class Player
     {
-        //Player Stats
-        private int health, attack;
-
         //Position
-        private int x, y;
-
-
-        public Player()
-        {
-            health = 10;
-            attack = 1;
-            x = 0;
-            y = 0;
-        }
+        public int x = 0, y = 0, health = 10, attack = 1;
 
         public int getXPosition()
         {
@@ -49,13 +57,12 @@ namespace Barren
 
         public void movePosition(string movement)
         {
-            if      (movement.Equals("North") || movement.Equals("N")) y = y + 1;
+            if (movement.Equals("North") || movement.Equals("N")) y = y + 1;
             else if (movement.Equals("South") || movement.Equals("S")) y = y - 1;
-            else if  (movement.Equals("East") || movement.Equals("E")) x = x + 1;
-            else if  (movement.Equals("West") || movement.Equals("W")) x = x - 1;
+            else if (movement.Equals("East") || movement.Equals("E")) x = x + 1;
+            else if (movement.Equals("West") || movement.Equals("W")) x = x - 1;
             else Console.WriteLine("Invalid movement requested");
         }
-
         public void displayEncounterStory()
         {
             Random rnd = new Random();
@@ -94,5 +101,59 @@ namespace Barren
                     break;
             }
         }
+
+        class Map
+        {
+
+            private static readonly Random rnd = new Random();
+            int near = rnd.Next(1, 11); // creates a number between 1 and 12
+            int far = rnd.Next(1, 11);
+            int ycomp, xcomp;
+            public static int xcord, ycord;
+            public int newcompx(int x)
+            {
+                xcomp = x + rnd.Next(-5, 5);
+                return xcomp;
+            }
+            public int newcompy(int y)
+            {
+                ycomp = y + rnd.Next(-5, 5);
+                return ycomp;
+            }
+        }
+        class Combat
+        {
+            int bossH, bossA;
+            public void boss()
+            {
+                bossH = 20;
+                bossA = 10;
+            }
+            public void fight()
+            {
+                if ((Map.ycomp == player.getXPosition()) && (Map.ycomp == player.getYPosition()))
+                {
+                    combat();
+                }
+
+            }
+            public void combat()
+            {
+                while (bossH > 0 & health > 0)
+                {
+                    bossH = bossH - attack;
+                    health = health - bossA;
+                }
+                if (bossH < 0)
+                {
+                    Console.WriteLine("You defeated the enemy!");
+                }
+                else
+                {
+                    Console.WriteLine("You are dead");
+                }
+            }
+        }
     }
 }
+
